@@ -1,0 +1,87 @@
+[
+  {
+    "id": "moonshot-kimi",
+    "name": "Moonshot AI",
+    "provider": "Moonshot",
+    "purpose": "Primary LLM for general tasks and reasoning",
+    "tier": "Paid",
+    "status": "Active",
+    "pricing": {
+      "input_per_1m": 0.60,
+      "output_per_1m": 2.50
+    },
+    "dashboard_url": "https://platform.moonshot.cn/console/usage",
+    "limits": {
+      "requests_per_min": 60,
+      "monthly_limit": null
+    }
+  },
+  {
+    "id": "deepseek-v3",
+    "name": "DeepSeek V3",
+    "provider": "DeepSeek",
+    "purpose": "Coding assistance for Alex and development work",
+    "tier": "Paid",
+    "status": "Active",
+    "pricing": {
+      "input_per_1m": 0.14,
+      "output_per_1m": 0.28
+    },
+    "dashboard_url": "https://platform.deepseek.com/api-keys",
+    "limits": {
+      "requests_per_min": 30,
+      "monthly_limit": null
+    }
+  },
+  {
+    "id": "finnhub",
+    "name": "Finnhub",
+    "provider": "Finnhub",
+    "purpose": "Real-time stock prices and financial data",
+    "tier": "Free",
+    "status": "Active",
+    "pricing": {
+      "input_per_1m": "Free",
+      "output_per_1m": "Free"
+    },
+    "dashboard_url": "https://finnhub.io/dashboard",
+    "limits": {
+      "requests_per_min": 60,
+      "monthly_limit": "Unlimited"
+    }
+  },
+  {
+    "id": "brave-search",
+    "name": "Brave Search",
+    "provider": "Brave",
+    "purpose": "Web search and information retrieval",
+    "tier": "Free",
+    "status": "Active",
+    "pricing": {
+      "input_per_1m": "Free",
+      "output_per_1m": "Free"
+    },
+    "dashboard_url": "https://brave.com/search/api/",
+    "limits": {
+      "requests_per_min": null,
+      "monthly_limit": "Unlimited"
+    }
+  },
+  {
+    "id": "localtunnel",
+    "name": "LocalTunnel",
+    "provider": "LocalTunnel",
+    "purpose": "Remote access and tunneling for local development",
+    "tier": "Free",
+    "status": "Active",
+    "pricing": {
+      "input_per_1m": "Free",
+      "output_per_1m": "Free"
+    },
+    "dashboard_url": "https://localtunnel.github.io/www/",
+    "limits": {
+      "requests_per_min": null,
+      "monthly_limit": "Unlimited"
+    }
+  }
+]
