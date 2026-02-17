@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Control</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Mission Control</h1>
+        <nav class="nav">
+            <button class="nav-btn active" onclick="showView('holdings', event)">Holdings</button>
+            <button class="nav-btn" onclick="showView('analysis', event)">Analysis</button>
+            <button class="nav-btn" onclick="showView('ideas', event)">Ideas</button>
+            <button class="nav-btn" onclick="showView('corporate', event)">Corporate</button>
+            <button class="nav-btn" onclick="showView('api', event)">API</button>
+        </nav>
+    </div>
+    
+    <div class="container">
+        <div id="holdings-view" class="view active"></div>
+        <div id="analysis-view" class="view"></div>
+        <div id="ideas-view" class="view"></div>
+        <div id="corporate-view" class="view"></div>
+        <div id="api-view" class="view"></div>
+    </div>
+    
+    <script src="js/core.js"></script>
+    <script src="js/modules/holdings.js"></script>
+    <!-- Placeholder modules -->
+    <script>
+        // Placeholder modules for tabs not yet built
+        ['analysis', 'ideas', 'corporate', 'api'].forEach(name => {
+            MissionControl.register(name, {
+                loaded: false,
+                load() {
+                    document.getElementById(name + '-view').innerHTML = `
+                        <div class="card">
+                            <div class="card-header"><div class="card-title">${name.charAt(0).toUpperCase() + name.slice(1)}</div></div>
+                            <div class="loading">Coming soon...</div>
+                        </div>`;
+                    this.loaded = true;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
