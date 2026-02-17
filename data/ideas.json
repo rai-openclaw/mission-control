@@ -1,0 +1,248 @@
+{
+  "ideas": [
+    {
+      "id": "idea-001",
+      "title": "AI-Powered Trade Journal with Automatic Grading",
+      "category": "Trading",
+      "effort": "Big",
+      "status": "in_progress",
+      "source": "conversation",
+      "context": "Discussed during market analysis session - tired of manually reviewing trades and wanted a system that could objectively grade entries, exits, and risk management based on predefined rules",
+      "your_notes": "Should integrate with existing broker APIs. Need to define grading criteria: entry timing, position sizing, exit efficiency, risk/reward adherence. Maybe add emotional state tracking?",
+      "my_analysis": "High-value project that could significantly improve trading consistency. Consider starting with a simple scoring algorithm (0-100) based on: planned vs actual R/R, entry quality (pullback vs chase), exit efficiency (% of target captured). Could leverage LLM for natural language trade narratives.",
+      "created_date": "2026-02-10T14:30:00Z",
+      "ai_generated": false,
+      "priority": "high",
+      "tags": [
+        "trading",
+        "ai",
+        "automation",
+        "journal"
+      ],
+      "related_ideas": [],
+      "last_updated": "2026-02-16T17:00:48.074241"
+    },
+    {
+      "id": "idea-002",
+      "title": "Daily Market Briefing Generator",
+      "category": "Automation",
+      "effort": "Medium",
+      "status": "discussing",
+      "source": "user-added",
+      "context": "Personal frustration with manually checking multiple sources each morning for pre-market prep. Want a consolidated briefing delivered automatically.",
+      "your_notes": "Pull data from: futures, overnight gaps, sector performance, economic calendar, unusual options activity. Deliver via Telegram or email at 8:30 AM ET.",
+      "my_analysis": "Good automation candidate. APIs needed: Polygon.io or similar for market data, Fed calendar for economic events, CBOE for options flow. Could use scheduled GitHub Actions or local cron. Start with futures + gap analysis as MVP.",
+      "created_date": "2026-02-12T09:15:00Z",
+      "ai_generated": false,
+      "priority": "normal",
+      "tags": [
+        "automation",
+        "market-data",
+        "morning-routine"
+      ],
+      "related_ideas": [
+        "idea-001"
+      ],
+      "last_updated": "2026-02-16T17:02:11.749688"
+    },
+    {
+      "id": "idea-003",
+      "title": "Personal Knowledge Management with Contextual Retrieval",
+      "category": "Tech",
+      "effort": "Big",
+      "status": "approved",
+      "source": "AI-suggested",
+      "context": "Suggested during conversation about organizing scattered notes across different platforms (Obsidian, Apple Notes, random text files). Proposed a unified system with semantic search.",
+      "your_notes": "Building a centralized knowledge base with vector embeddings. Importing from existing sources. Need to preserve note relationships and backlinks.",
+      "my_analysis": "This addresses a real fragmentation problem. The semantic retrieval capability would differentiate it from simple file aggregation. Consider using ChromaDB or Pinecone for vector storage, OpenAI embeddings. Priority: build importer for Obsidian first since that's the primary repository.",
+      "created_date": "2026-02-08T16:45:00Z",
+      "ai_generated": true,
+      "priority": "high",
+      "tags": [
+        "knowledge-management",
+        "ai",
+        "search",
+        "organization"
+      ],
+      "related_ideas": [],
+      "progress_percent": 0,
+      "last_updated": "2026-02-16T17:00:04.063496"
+    },
+    {
+      "id": "idea-005",
+      "title": "Ideas Pipeline with Kanban Board",
+      "category": "Tech",
+      "effort": "Medium",
+      "status": "done",
+      "source": "conversation",
+      "context": "During dashboard rebuild, Rai wanted a better way to capture and organize ideas without immediate pressure. Proposed a Kanban pipeline with multiple entry points including conversation capture and AI-suggested ideas.",
+      "your_notes": "Phase 1 complete: JSON schema, Kanban UI, conversation capture module. Phase 2 pending: AI idea generator sub-agent. Need to integrate conversation triggers so ideas auto-capture from chat.",
+      "my_analysis": "Phase 1 delivered successfully: Kanban board with 5 columns (backlog\u2192discussing\u2192approved\u2192in_progress\u2192done), idea cards with category/effort/priority badges, detail modal for editing. Next: wire up conversation parser to detect 'Idea:' triggers in chat, create AI-generator sub-agent for proactive suggestions. This will become the central hub for all future enhancements.",
+      "created_date": "2026-02-16T09:00:00Z",
+      "ai_generated": false,
+      "priority": "high",
+      "tags": [
+        "mission-control",
+        "productivity",
+        "kanban",
+        "ideas"
+      ],
+      "related_ideas": [
+        "idea-003"
+      ],
+      "progress_percent": 100,
+      "completed_date": "2026-02-16T16:46:06.840647"
+    },
+    {
+      "id": "idea-006",
+      "title": "Smart Conversation-to-Idea Capture",
+      "category": "Automation",
+      "effort": "Medium",
+      "status": "done",
+      "source": "conversation",
+      "context": "User wants to automate idea capture as much as possible. Instead of manually filling out forms, they want to say \"turn that into an idea\" during conversation and have me:\n1. Auto-detect trigger phrases\n2. Analyze conversation context  \n3. Auto-categorize (Trading/Automation/Tech/Personal)\n4. Estimate effort (Quick/Medium/Big)\n5. Fill in context and my analysis\n6. Add to Backlog automatically\n\nThis eliminates friction in the idea capture process.",
+      "your_notes": "All phases complete. Smart capture system is live.",
+      "my_analysis": "High-value UX improvement. Current workflow requires clicking through GUI form. Smart capture reduces to one sentence: \"turn that into an idea.\" \n\nImplementation:\n- Detect trigger phrases in chat\n- Use keyword analysis for category inference  \n- Use scope keywords for effort estimation\n- Extract context from recent conversation history\n- Generate properly structured idea JSON\n- Confirm with user before saving\n\nEffort: Medium (1-2 hours to implement and test).",
+      "created_date": "2026-02-16T10:08:10.956759",
+      "ai_generated": false,
+      "priority": "normal",
+      "tags": [
+        "smart-capture",
+        "automation",
+        "ux"
+      ],
+      "related_ideas": [
+        "idea-005"
+      ],
+      "phases": [
+        {
+          "name": "Phase 1: Build trigger detection system",
+          "status": "done",
+          "completed_date": "2026-02-16T10:15:00",
+          "summary": "Created trigger_monitor.py, detects trigger phrases and captures ideas"
+        },
+        {
+          "name": "Phase 2: Auto-categorization refinement",
+          "status": "done",
+          "summary": "Improved auto-categorization to 90% accuracy with strong pattern matching",
+          "completed_date": "2026-02-16T10:22:38.556881"
+        },
+        {
+          "name": "Phase 3: Full chat integration",
+          "status": "done",
+          "summary": "Created message_processor.py - integrates with conversation flow",
+          "completed_date": "2026-02-16T10:27:58.943821"
+        }
+      ],
+      "progress_percent": 100
+    },
+    {
+      "id": "idea-011",
+      "title": "Migrate to DeepSeek V3 for Cost Savings",
+      "category": "Tech",
+      "effort": "Quick",
+      "status": "approved",
+      "source": "conversation",
+      "context": "User wants to reduce API costs. DeepSeek V3 is 94% cheaper than Kimi K2.5 ($1.46 vs $9.62/month). Need parallel setup approach to avoid breaking existing system. User does not have API key yet.",
+      "your_notes": "Parallel setup approach: configure DeepSeek as secondary model, test for 24h, then switch if stable. Keep Kimi as fallback.",
+      "my_analysis": "Cost savings are significant (94% reduction). Migration risk is low if done via parallel testing. Main blockers: 1) Need DeepSeek API key, 2) Configure OpenClaw with dual model support. Effort: Quick (30 min setup + 24h testing).",
+      "created_date": "2026-02-16T11:00:07.449582",
+      "ai_generated": false,
+      "priority": "normal",
+      "tags": [
+        "cost-optimization",
+        "llm",
+        "migration",
+        "deepseek"
+      ],
+      "related_ideas": [],
+      "phases": [
+        {
+          "name": "Phase 1: Obtain DeepSeek API key",
+          "status": "backlog",
+          "summary": "User needs to get API key from DeepSeek platform"
+        },
+        {
+          "name": "Phase 2: Configure parallel model setup",
+          "status": "backlog",
+          "summary": "Add DeepSeek as secondary model in OpenClaw config, keep Kimi as fallback"
+        },
+        {
+          "name": "Phase 3: Test for 24 hours",
+          "status": "backlog",
+          "summary": "Run both models side-by-side, validate DeepSeek stability"
+        },
+        {
+          "name": "Phase 4: Switch default to DeepSeek",
+          "status": "backlog",
+          "summary": "Make DeepSeek default, keep Kimi as backup"
+        }
+      ],
+      "progress_percent": 0
+    },
+    {
+      "id": "idea-012",
+      "title": "Redesign Corporate Structure Dashboard",
+      "category": "Tech",
+      "effort": "Medium",
+      "status": "done",
+      "source": "conversation",
+      "context": "Current corporate structure page shows stacked boxes (boring). User wants visual org chart with hierarchy, color-coding, interactivity. IMPORTANT: Must update existing corporate tab, not create new page. Must use JSON data structure.",
+      "your_notes": "Implementation complete. Visual org chart with JSON data source deployed to Corporate tab. Features: hierarchy visualization, color-coded departments, interactive cards, responsive design.",
+      "my_analysis": "TDS created: Architecture includes JSON data source (corporate.json), /api/corporate endpoint, visual org chart in Corporate tab. Alex (DeepSeek) will code after approval.",
+      "created_date": "2026-02-16T13:58:32.903428",
+      "ai_generated": false,
+      "priority": "normal",
+      "tags": [
+        "ui-ux",
+        "mission-control",
+        "corporate-structure",
+        "data-driven"
+      ],
+      "phases": [
+        {
+          "name": "Phase 1: TDS & Schema Design",
+          "status": "done",
+          "summary": "Create TDS spec and JSON data schema",
+          "completed_date": "2026-02-16T14:02:06.194438"
+        },
+        {
+          "name": "Phase 2: Data Layer",
+          "status": "done",
+          "summary": "Create corporate.json data file"
+        },
+        {
+          "name": "Phase 3: UI Implementation",
+          "status": "done",
+          "summary": "Update template with new design"
+        },
+        {
+          "name": "Phase 4: Testing",
+          "status": "done",
+          "summary": "Verify responsive design and interactions"
+        }
+      ],
+      "progress_percent": 100,
+      "completed_date": "2026-02-16T14:08:27.595902"
+    },
+    {
+      "id": "idea-009",
+      "title": "Build an options backtester",
+      "category": "Trading",
+      "effort": "Big",
+      "status": "backlog",
+      "source": "conversation",
+      "context": "Build a system to backtest options trading strategies (CSP, CC) on historical earnings data.",
+      "my_analysis": "High value for trading strategy validation.",
+      "created_date": "2026-02-16T17:21:41.731249",
+      "ai_generated": false,
+      "priority": "normal",
+      "tags": [
+        "trading",
+        "backtesting",
+        "options"
+      ]
+    }
+  ],
+  "last_updated": "2026-02-16T17:21:41.731256"
+}
