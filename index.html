@@ -29,9 +29,10 @@
     <script src="js/core.js"></script>
     <script src="js/modules/holdings.js"></script>
     <script src="js/modules/analysis.js"></script>
+    <script src="js/modules/ideas.js"></script>
     <script>
         // Placeholder modules for remaining tabs
-        ['ideas', 'corporate', 'api'].forEach(name => {
+        ['corporate', 'api'].forEach(name => {
             MissionControl.register(name, {
                 loaded: false,
                 load() {
