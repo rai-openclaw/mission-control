@@ -28,18 +28,17 @@
     
     <script src="js/core.js"></script>
     <script src="js/modules/holdings.js"></script>
-    <!-- Placeholder modules -->
+    <script src="js/modules/analysis.js"></script>
     <script>
-        // Placeholder modules for tabs not yet built
-        ['analysis', 'ideas', 'corporate', 'api'].forEach(name => {
+        // Placeholder modules
+        ['ideas', 'corporate', 'api'].forEach(name => {
             MissionControl.register(name, {
                 loaded: false,
                 load() {
-                    document.getElementById(name + '-view').innerHTML = `
-                        <div class="card">
-                            <div class="card-header"><div class="card-title">${name.charAt(0).toUpperCase() + name.slice(1)}</div></div>
-                            <div class="loading">Coming soon...</div>
-                        </div>`;
+                    document.getElementById(name + '-view').innerHTML = 
+                        '<div class="card"><div class="card-header"><div class="card-title">' + 
+                        name.charAt(0).toUpperCase() + name.slice(1) + 
+                        '</div></div><div class="loading">Coming soon...</div></div>';
                     this.loaded = true;
                 }
             });
