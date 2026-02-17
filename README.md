@@ -1,2 +1,3 @@
-# mission-control
-Mission Control Dashboard - Modular Architecture
+# Mission Control
+
+Last updated: $(date)
