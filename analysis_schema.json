@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Earnings Analysis Schema",
+  "type": "object",
+  "required": ["date", "generated_at", "stocks"],
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stocks": {
+      "type": "object",
+      "patternProperties": {
+        "^[A-Z]{1,5}$": {
+          "type": "object",
+          "required": ["ticker", "company", "earnings_date", "earnings_time", "grade", "total_score", "expected_move", "grade_components", "key_insight", "trade_setup", "risk_factors", "bottom_line"],
+          "properties": {
+            "ticker": {"type": "string"},
+            "company": {"type": "string"},
+            "sector": {"type": "string"},
+            "earnings_date": {"type": "string", "format": "date"},
+            "earnings_time": {"type": "string", "enum": ["BMO", "AMC"]},
+            "grade": {"type": "string", "pattern": "^(A\\+?|A-|B\\+?|B-|C\\+?|C-|D\\+?|D-|F)$"},
+            "total_score": {"type": "integer", "minimum": 0, "maximum": 100},
+            "expected_move": {"type": "number", "minimum": 0},
+            "safety_margin_2x": {"type": "number", "minimum": 0},
+            "current_price": {"type": "number"},
+            "grade_components": {
+              "type": "object",
+              "required": ["earnings_predictability", "em_respect", "assignment_desirability", "premium_yield", "binary_risk"],
+              "properties": {
+                "earnings_predictability": {
+                  "type": "object",
+                  "required": ["score", "max", "reason"],
+                  "properties": {
+                    "score": {"type": "integer"},
+                    "max": {"type": "integer", "const": 30},
+                    "reason": {"type": "string", "minLength": 20}
+                  }
+                },
+                "em_respect": {
+                  "type": "object",
+                  "required": ["score", "max", "reason"],
+                  "properties": {
+                    "score": {"type": "integer"},
+                    "max": {"type": "integer", "const": 25},
+                    "reason": {"type": "string", "minLength": 20}
+                  }
+                },
+                "assignment_desirability": {
+                  "type": "object",
+                  "required": ["score", "max", "reason"],
+                  "properties": {
+                    "score": {"type": "integer"},
+                    "max": {"type": "integer", "const": 20},
+                    "reason": {"type": "string", "minLength": 20}
+                  }
+                },
+                "premium_yield": {
+                  "type": "object",
+                  "required": ["score", "max", "reason"],
+                  "properties": {
+                    "score": {"type": "integer"},
+                    "max": {"type": "integer", "const": 20},
+                    "reason": {"type": "string", "minLength": 20}
+                  }
+                },
+                "binary_risk": {
+                  "type": "object",
+                  "required": ["score", "max", "reason"],
+                  "properties": {
+                    "score": {"type": "integer", "minimum": -5, "maximum": 0},
+                    "max": {"type": "integer", "const": 0},
+                    "reason": {"type": "string", "minLength": 10}
+                  }
+                }
+              }
+            },
+            "key_insight": {"type": "string", "minLength": 50},
+            "historical_em": {"type": "number"},
+            "trade_setup": {
+              "type": "object",
+              "required": ["strategy", "strikes", "premium_target", "expiration", "annualized_return"],
+              "properties": {
+                "strategy": {"type": "string", "enum": ["Cash-secured puts", "Iron condor", "Iron butterfly", "Straddle", "Strangle", "Bull call spread", "Bear put spread", "Credit spread"]},
+                "strikes": {"type": "string"},
+                "premium_target": {"type": "string"},
+                "expiration": {"type": "string"},
+                "annualized_return": {"type": "string"}
+              }
+            },
+            "risk_factors": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "object",
+                "required": ["risk", "impact", "probability"],
+                "properties": {
+                  "risk": {"type": "string"},
+                  "impact": {"type": "string"},
+                  "probability": {"type": "string", "enum": ["Low", "Low-Medium", "Medium", "Medium-High", "High"]}
+                }
+              }
+            },
+            "bottom_line": {"type": "string", "minLength": 30},
+            "last_analyzed": {"type": "string", "format": "date-time"}
+          }
+        }
+      }
+    }
+  }
+}
