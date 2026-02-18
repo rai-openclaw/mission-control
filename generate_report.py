@@ -45,7 +45,7 @@ h3 {{ color: #2d5a87; margin-top: 25px; }}
     for ticker, stock in data['stocks'].items():
         grade_class = f"grade-{stock['grade'][0].lower()}"
         rec_class = f"rec-{stock.get('recommendation', 'watch').lower()}"
-        notes = stock['key_insight'][:120] + "..."
+        notes = stock['key_insight']
         
         html += f"""<tr>
 <td><span class="ticker">{ticker}</span></td>
