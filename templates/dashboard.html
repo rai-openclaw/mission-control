@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission Control v2.0</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --bg-hover: #252532;
+            --bg-sidebar: #0d0d14;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --positive: #10b981;
+            --negative: #ef4444;
+            --border: #27272a;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+        }
+        
+        .sidebar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            padding-left: 0.75rem;
+        }
+        
+        .nav-item {
+            padding: 0.625rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+        
+        .view { display: none; }
+        .view.active { display: block; }
+        
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .card-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .portfolio-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        
+        .portfolio-table th {
+            text-align: left;
+            padding: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .portfolio-table th.sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            position: relative;
+            padding-right: 1.5rem;
+        }
+        
+        .portfolio-table th.sortable:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+        
+        .portfolio-table th.sortable::after {
+            content: '⇅';
+            position: absolute;
+            right: 0.5rem;
+            opacity: 0.4;
+            font-size: 0.75rem;
+        }
+        
+        .portfolio-table th.sort-asc::after {
+            content: '▲';
+            opacity: 1;
+            color: var(--accent);
+        }
+        
+        .portfolio-table th.sort-desc::after {
+            content: '▼';
+            opacity: 1;
+            color: var(--accent);
+        }
+        
+        .portfolio-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .portfolio-table tr:hover {
+            background: var(--bg-hover);
+        }
+        
+        .ticker {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .positive { color: var(--positive); }
+        .negative { color: var(--negative); }
+        
+        .expand-btn {
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .accounts-detail {
+            display: none;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .refresh-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .refresh-btn:hover { background: var(--accent-hover); }
+        .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .totals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .total-card {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .total-card-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .total-card-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        /* ==================== KANBAN BOARD ==================== */
+        .kanban-board {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            min-height: calc(100vh - 200px);
+        }
+        
+        .kanban-column {
+            flex: 0 0 280px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            max-height: calc(100vh - 180px);
+        }
+        
+        .kanban-column-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .kanban-column-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
+        }
+        
+        .kanban-column-count {
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.625rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .kanban-column-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .kanban-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .kanban-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .kanban-card-title {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+        
+        .kanban-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .category-trading {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+        
+        .category-tech {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+        }
+        
+        .category-personal {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+        }
+        
+        .effort-indicator {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .source-indicator {
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+        
+        .kanban-add-btn {
+            background: transparent;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            margin-top: auto;
+        }
+        
+        .kanban-add-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        /* Priority indicators */
+        .priority-high {
+            border-left: 3px solid var(--negative);
+        }
+        
+        .priority-medium {
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .priority-low {
+            border-left: 3px solid var(--positive);
+        }
+        
+        /* Modal form styles */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            font-family: inherit;
+        }
+        
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-select {
+            cursor: pointer;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .analysis-display {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 100px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+        
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--negative);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+        
+        .date-display {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        
+        .analysis-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .analysis-card:hover {
+            border-color: var(--accent);
+        }
+        
+        .analysis-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .analysis-card-ticker {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .analysis-card-grade {
+            background: var(--accent);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .analysis-card-summary {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active { display: flex; }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 90%;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+        
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 60px;
+                display: flex;
+                overflow-x: auto;
+                padding: 0.5rem;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .sidebar-title {
+                display: none;
+            }
+            
+            .nav-item {
+                white-space: nowrap;
+                margin: 0 0.25rem;
+                padding: 0.5rem 0.75rem;
+            }
+            
+            .main {
+                padding: 1rem;
+                height: calc(100vh - 60px);
+            }
+            
+            .portfolio-table {
+                font-size: 0.75rem;
+            }
+            
+            .portfolio-table th,
+            .portfolio-table td {
+                padding: 0.5rem;
+            }
+            
+            .card {
+                padding: 1rem;
+            }
+            
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+        
+        /* Org Chart Styles */
+        /* Minimal Org Chart */
+        .org-tree { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 1rem; }
+        .org-level { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+        .org-connector { width: 2px; height: 1rem; background: var(--border); }
+        .org-card { background: var(--bg-card); border: 2px solid var(--dept-color, var(--accent)); border-radius: 12px; padding: 1rem; width: 260px !important; max-width: 260px; }
+        .org-card-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+        .org-card-avatar { font-size: 1.5rem; }
+        .org-card h3 { margin: 0; font-size: 1rem; }
+        .org-card-role { font-size: 0.75rem; color: var(--dept-color, var(--accent)); }
+        .org-card-body { font-size: 0.875rem; color: var(--text-secondary); }
+        .org-legend { display: flex; gap: 1rem; margin-top: 1rem; justify-content: center; font-size: 0.875rem; }
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        @media (max-width: 768px) {
+            .org-level {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .org-card {
+                width: 100% !important;
+                max-width: 340px;
+            }
+        }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-title">Menu</div>
+            <div class="nav-item active" onclick="showView('holdings', event)">Holdings</div>
+            <div class="nav-item" onclick="showView('analysis', event)">Analysis</div>
+            <div class="nav-item" onclick="showView('earnings', event)">Earnings</div>
+            <div class="nav-item" onclick="showView('ideas', event)">Ideas</div>
+            <div class="nav-item" onclick="showView('schedule', event)">Schedule</div>
+            <div class="nav-item" onclick="showView('corporate', event)">Corporate</div>
+            <div class="nav-item" onclick="showView('usage', event)">APIs</div>
+        </nav>
+        
+        <main class="main">
+            <!-- HOLDINGS TAB -->
+            <div id="holdings-view" class="view active">
+                <div id="holdings-content">
+                    <div class="loading">Loading portfolio...</div>
+                </div>
+            </div>
+            
+            <!-- ANALYSIS TAB -->
+            <div id="analysis-view" class="view">
+                <div style="margin-bottom: 1.5rem;">
+                    <h2 style="margin-bottom: 1rem;">Stock Analysis Archive</h2>
+                    <input type="text" class="search-box" id="analysis-search" placeholder="Search..." onkeyup="filterAnalysis()">
+                </div>
+                <div id="analysis-content">
+                    <div class="loading">Loading analysis...</div>
+                </div>
+            </div>
+            
+            <!-- EARNINGS TAB -->
+            <div id="earnings-view" class="view">
+                <h2 style="margin-bottom: 1rem;">Earnings Research</h2>
+                <div id="earnings-content">
+                    <div class="loading">Loading earnings data...</div>
+                </div>
+            </div>
+            
+            <!-- IDEAS TAB -->
+            <div id="ideas-view" class="view">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2>Ideas & Notes</h2>
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Click cards to edit • Drag status to move</span>
+                </div>
+                <div class="kanban-board" id="ideas-kanban">
+                    <!-- Columns will be rendered by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- SCHEDULE TAB -->
+            <div id="schedule-view" class="view">
+                <h2 style="margin-bottom: 1rem;">Schedule</h2>
+                <div id="schedule-content">
+                    <div class="loading">Loading schedule...</div>
+                </div>
+            </div>
+            
+            <!-- CORPORATE TAB -->
+            <div id="corporate-view" class="view">
+                <h2 style="margin-bottom: 1rem;">Corporate Structure</h2>
+                <div id="corporate-content">
+                    <div class="loading">Loading team...</div>
+                </div>
+            </div>
+            
+            <!-- API USAGE TAB -->
+            <div id="usage-view" class="view">
+                <h2 style="margin-bottom: 1rem;">API Usage</h2>
+                <div id="usage-content">
+                    <div class="loading">Loading API data...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div id="analysis-modal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modal-title">Analysis</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+    
+    <div id="idea-modal" class="modal" onclick="closeIdeaModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="idea-modal-title">Idea Details</h2>
+                <button class="modal-close" onclick="closeIdeaModal()">&times;</button>
+            </div>
+            <div id="idea-modal-body">
+                <form id="idea-form">
+                    <input type="hidden" id="idea-id">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-input" id="idea-title" placeholder="Enter idea title...">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" id="idea-category">
+                                <option value="Trading">💼 Trading</option>
+                                <option value="Automation">⚙️ Automation</option>
+                                <option value="Tech">🔧 Tech</option>
+                                <option value="Personal">🏠 Personal</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Effort</label>
+                            <select class="form-select" id="idea-effort">
+                                <option value="Quick">⏱️ Quick</option>
+                                <option value="Medium">⏱️⏱️ Medium</option>
+                                <option value="Big">⏱️⏱️⏱️ Big</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select" id="idea-priority">
+                                <option value="low">🟢 Low</option>
+                                <option value="normal">🟡 Normal</option>
+                                <option value="high">🔴 High</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" id="idea-status">
+                                <option value="backlog">Backlog</option>
+                                <option value="discussing">Discussing</option>
+                                <option value="approved">Approved</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="done">Done</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Your Notes</label>
+                        <textarea class="form-textarea" id="idea-notes" placeholder="Add your notes here..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">AI Analysis (Read-only)</label>
+                        <div class="analysis-display" id="idea-analysis">
+                            <em>No analysis available for this idea.</em>
+                        </div>
+                    </div>
+                    <div class="form-group" id="start-work-section" style="display: none;">
+                        <button type="button" class="btn btn-success" onclick="queueForExecution()" style="width: 100%; padding: 0.75rem; font-size: 1rem;">
+                            🚀 Start Work on This Idea
+                        </button>
+                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; text-align: center;">
+                            I'll message you in Telegram to discuss scope and begin execution
+                        </p>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-danger" id="idea-delete-btn" onclick="deleteIdea()">Delete</button>
+                        <div style="display: flex; gap: 0.75rem;">
+                            <button type="button" class="btn btn-secondary" onclick="closeIdeaModal()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global data
+        let portfolioData = null;
+        let analysisData = [];
+        
+        // Tab switching
+        function showView(viewName, event) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(viewName + '-view').classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load data for the tab
+            if (viewName === 'holdings') loadHoldings();
+            else if (viewName === 'analysis') loadAnalysis();
+            else if (viewName === 'earnings') loadEarnings();
+            else if (viewName === 'ideas') loadIdeas();
+            else if (viewName === 'schedule') loadSchedule();
+            else if (viewName === 'corporate') loadCorporate();
+            else if (viewName === 'usage') loadUsage();
+        }
+        
+        // Format helpers
+        function formatCurrency(value) {
+            if (value < 0) {
+                return `($${Math.abs(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})})`;
+            }
+            return '$' + value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+        
+        function formatTimeAgo(date) {
+            if (!date || isNaN(date.getTime())) return 'Never';
+            const mins = Math.floor((new Date() - date) / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return mins + ' min ago';
+            if (mins < 1440) return Math.floor(mins/60) + ' hours ago';
+            return Math.floor(mins/1440) + ' days ago';
+        }
+        
+        // Toggle account breakdown
+        function toggleAccounts(btn) {
+            const detail = btn.nextElementSibling;
+            if (detail.style.display === 'none' || detail.style.display === '') {
+                detail.style.display = 'block';
+                btn.textContent = btn.textContent.replace('▼', '▲');
+            } else {
+                detail.style.display = 'none';
+                btn.textContent = btn.textContent.replace('▲', '▼');
+            }
+        }
+        
+        // ==================== SORTING ====================
+        
+        let currentSort = { column: null, direction: 'asc' };
+        
+        function handleSort(column) {
+            // Remove sort classes from all headers
+            document.querySelectorAll('.portfolio-table th').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+            });
+            
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'desc'; // Default to desc for value (highest first)
+            }
+            
+            // Add sort class to clicked header
+            const clickedHeader = event.target.closest('th');
+            if (clickedHeader) {
+                clickedHeader.classList.add(currentSort.direction === 'asc' ? 'sort-asc' : 'sort-desc');
+            }
+            
+            renderHoldings(portfolioData);
+        }
+        
+        function sortStocks(stocks, column, direction) {
+            const sorted = [...stocks];
+            const multiplier = direction === 'asc' ? 1 : -1;
+            
+            sorted.sort((a, b) => {
+                if (column === 'value') {
+                    return multiplier * (a.total_value - b.total_value);
+                }
+                return 0;
+            });
+            
+            return sorted;
+        }
+        
+        // ==================== HOLDINGS TAB ====================
+        
+        async function loadHoldings() {
+            try {
+                const response = await fetch('/api/portfolio');
+                portfolioData = await response.json();
+                renderHoldings(portfolioData);
+            } catch (error) {
+                document.getElementById('holdings-content').innerHTML = 
+                    '<div class="card">Error loading portfolio</div>';
+            }
+        }
+        
+        function renderHoldings(data) {
+            const lastRefresh = new Date(data.last_price_refresh);
+            const hoursAgo = (new Date() - lastRefresh) / (1000 * 60 * 60);
+            const needsAsterisk = hoursAgo > 24;
+            
+            // Sort stocks if needed
+            let stocksToRender = data.stocks;
+            if (currentSort.column === 'value') {
+                stocksToRender = sortStocks(data.stocks, 'value', currentSort.direction);
+            }
+            
+            let html = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <h2>Portfolio Holdings</h2>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">
+                            Last refresh: ${formatTimeAgo(lastRefresh)}
+                        </span>
+                        <button class="refresh-btn" onclick="refreshPrices()">Refresh Prices</button>
+                    </div>
+                </div>
+            `;
+            
+            // Stocks Section
+            html += `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Stocks & ETFs</div>
+                        <div class="card-value">${formatCurrency(data.totals.stocks_etfs)}</div>
+                    </div>
+                    <table class="portfolio-table">
+                        <thead>
+                            <tr>
+                                <th>Ticker</th>
+                                <th>Shares</th>
+                                <th>Price${needsAsterisk ? '*' : ''}</th>
+                                <th>Cost/Share</th>
+                                <th class="sortable" onclick="handleSort('value')">Value <span id="sort-indicator"></span></th>
+                                <th>P/L %</th>
+                                <th>Accounts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${stocksToRender.map(stock => {
+                                const costPerShare = stock.total_cost_basis / stock.total_shares;
+                                const plPct = stock.total_return_pct;
+                                const plClass = plPct >= 0 ? 'positive' : 'negative';
+                                const indicator = needsAsterisk ? '*' : '';
+                                
+                                const accountsHtml = stock.accounts.map(a => {
+                                    const acctValue = a.shares * stock.price;
+                                    return `${a.account}: ${formatCurrency(acctValue)}`;
+                                }).join('<br>');
+                                
+                                return `
+                                    <tr>
+                                        <td><div class="ticker">${stock.ticker}</div></td>
+                                        <td>${stock.total_shares.toLocaleString()}</td>
+                                        <td>${stock.price < 0 ? '<span style="color: var(--negative)">Error</span>' : '$'+stock.price.toFixed(2)+indicator}</td>
+                                        <td>$${costPerShare.toFixed(2)}</td>
+                                        <td>${formatCurrency(stock.total_value)}</td>
+                                        <td class="${plClass}">${plPct >= 0 ? '+' : ''}${plPct.toFixed(1)}%</td>
+                                        <td>
+                                            <button class="expand-btn" onclick="toggleAccounts(this)">▼ ${stock.accounts.length}</button>
+                                            <div class="accounts-detail">${accountsHtml}</div>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Options Section
+            html += `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Options Positions</div>
+                        <div class="card-value">${formatCurrency(data.totals.options)}</div>
+                    </div>
+                    <table class="portfolio-table">
+                        <thead>
+                            <tr><th>Ticker</th><th>Type</th><th>Strike</th><th>Exp</th><th>Contracts</th><th>Premium</th><th>Value</th><th>Accounts</th></tr>
+                        </thead>
+                        <tbody>
+                            ${data.options.map(opt => {
+                                const premium = opt.total_entry_value / opt.total_contracts / 100;
+                                const accountsHtml = opt.accounts.map(a => {
+                                    const val = a.contracts * a.entry_premium * 100;
+                                    return `${a.account}: ${formatCurrency(val)}`;
+                                }).join('<br>');
+                                return `
+                                    <tr>
+                                        <td><div class="ticker">${opt.ticker}</div></td>
+                                        <td>${opt.type}</td>
+                                        <td>$${opt.strike}</td>
+                                        <td>${opt.expiration}</td>
+                                        <td>${opt.total_contracts}</td>
+                                        <td>$${premium.toFixed(3)}</td>
+                                        <td>${formatCurrency(opt.current_value)}</td>
+                                        <td>
+                                            <button class="expand-btn" onclick="toggleAccounts(this)">▼ ${opt.accounts.length}</button>
+                                            <div class="accounts-detail">${accountsHtml}<br><i>${opt.note}</i></div>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Cash Section
+            html += `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Cash & Cash Equivalents</div>
+                        <div class="card-value">${formatCurrency(data.totals.cash_equivalents)}</div>
+                    </div>
+                    <table class="portfolio-table">
+                        <thead><tr><th>Asset</th><th>Total</th><th>Details</th><th>Accounts</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><div class="ticker">Cash</div></td>
+                                <td>${formatCurrency(data.cash.Cash.total)}</td>
+                                <td>-</td>
+                                <td>
+                                    <button class="expand-btn" onclick="toggleAccounts(this)">▼ ${data.cash.Cash.accounts.length}</button>
+                                    <div class="accounts-detail">${data.cash.Cash.accounts.map(a => `${a.account}: ${formatCurrency(a.value)}`).join('<br>')}</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><div class="ticker">SGOV</div></td>
+                                <td>${formatCurrency(data.cash.SGOV.total)}</td>
+                                <td>${data.cash.SGOV.total_shares.toFixed(2)} sh @ $${data.cash.SGOV.price.toFixed(2)}${needsAsterisk ? '*' : ''}</td>
+                                <td>
+                                    <button class="expand-btn" onclick="toggleAccounts(this)">▼ ${data.cash.SGOV.accounts.length}</button>
+                                    <div class="accounts-detail">${data.cash.SGOV.accounts.map(a => `${a.account}: ${formatCurrency(a.value)}`).join('<br>')}</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Total Section
+            html += `
+                <div class="card" style="background: var(--bg-secondary);">
+                    <div class="card-header">
+                        <div class="card-title">Total Portfolio</div>
+                        <div class="card-value" style="font-size: 1.5rem;">${formatCurrency(data.totals.grand_total)}</div>
+                    </div>
+                    <div class="totals-grid">
+                        <div class="total-card">
+                            <div class="total-card-label">Stocks & ETFs</div>
+                            <div class="total-card-value">${formatCurrency(data.totals.stocks_etfs)}</div>
+                        </div>
+                        <div class="total-card">
+                            <div class="total-card-label">Options</div>
+                            <div class="total-card-value">${formatCurrency(data.totals.options)}</div>
+                        </div>
+                        <div class="total-card">
+                            <div class="total-card-label">Cash & Equivalents</div>
+                            <div class="total-card-value">${formatCurrency(data.totals.cash_equivalents)}</div>
+                        </div>
+                        <div class="total-card">
+                            <div class="total-card-label">Misc</div>
+                            <div class="total-card-value">${formatCurrency(data.totals.misc)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('holdings-content').innerHTML = html;
+        }
+        
+        async function refreshPrices() {
+            const btn = document.querySelector('.refresh-btn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Refreshing...';
+            }
+            try {
+                await fetch('/api/refresh-prices', {method: 'POST'});
+                await loadHoldings();
+            } catch (e) {
+                alert('Error refreshing prices');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Refresh Prices';
+                }
+            }
+        }
+        
+        // ==================== ANALYSIS TAB ====================
+
+        async function loadAnalysis() {
+            try {
+                const response = await fetch('/api/analysis-archive');
+                analysisData = await response.json();
+                renderAnalysis(analysisData);
+            } catch (error) {
+                document.getElementById('analysis-content').innerHTML =
+                    '<div class="card">Error loading analysis</div>';
+            }
+        }
+
+        function renderAnalysis(analyses) {
+            if (!analyses || analyses.length === 0) {
+                document.getElementById('analysis-content').innerHTML =
+                    '<div class="card">No analysis available</div>';
+                return;
+            }
+
+            const html = `
+                <div class="analysis-grid">
+                    ${analyses.map((a, idx) => `
+                        <div class="analysis-card" onclick="openAnalysisModal(${idx})">
+                            <div class="analysis-card-header">
+                                <div class="analysis-card-ticker">${a.ticker}</div>
+                                <div class="analysis-card-grade">${a.grade || 'B+'}</div>
+                            </div>
+                            <div class="analysis-card-summary">${a.summary}</div>
+                            ${a.entry ? `
+                            <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
+                                <span>Entry: $${a.entry}</span>
+                                ${a.current ? `<span>Current: $${a.current}</span>` : ''}
+                                ${a.gain ? `<span class="${a.gain >= 0 ? 'positive' : 'negative'}">${a.gain >= 0 ? '+' : ''}${a.gain}%</span>` : ''}
+                            </div>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('analysis-content').innerHTML = html;
+        }
+        
+        function filterAnalysis() {
+            const searchTerm = document.getElementById('analysis-search').value.toLowerCase();
+            const filtered = analysisData.filter(a => 
+                a.ticker.toLowerCase().includes(searchTerm) ||
+                a.summary.toLowerCase().includes(searchTerm)
+            );
+            renderAnalysis(filtered);
+        }
+        
+        function openAnalysisModal(index) {
+            const analysis = analysisData[index];
+            if (!analysis) return;
+
+            document.getElementById('modal-title').textContent = analysis.ticker + ' Analysis';
+            document.getElementById('modal-body').innerHTML = formatAnalysisText(analysis);
+            document.getElementById('analysis-modal').classList.add('active');
+        }
+        
+        function formatAnalysisText(analysis) {
+            const text = analysis.full_content || analysis.content || analysis.full_text || '';
+            if (!text) return '';
+
+            // Use marked.js for proper markdown rendering
+            const rawHtml = marked.parse(text);
+
+            // Add custom styling for dark theme
+            return rawHtml
+                .replace(/<h1/g, '<h1 style="color: var(--text-primary); margin: 1.5rem 0 0.75rem; font-size: 1.5rem;"')
+                .replace(/<h2/g, '<h2 style="color: var(--accent); margin: 1.5rem 0 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); font-size: 1.25rem;"')
+                .replace(/<h3/g, '<h3 style="color: var(--text-primary); margin: 1.25rem 0 0.5rem; font-size: 1.1rem;"')
+                .replace(/<p>/g, '<p style="margin: 0.75rem 0; line-height: 1.6;">')
+                .replace(/<ul>/g, '<ul style="margin: 0.75rem 0; padding-left: 1.5rem;">')
+                .replace(/<li>/g, '<li style="margin-bottom: 0.5rem;">')
+                .replace(/<table>/g, '<table style="width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.875rem;">')
+                .replace(/<th>/g, '<th style="padding: 0.5rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg-secondary); font-weight: 600;">')
+                .replace(/<td>/g, '<td style="padding: 0.5rem; text-align: left; border-bottom: 1px solid var(--border);">')
+                .replace(/<strong>/g, '<strong style="color: var(--text-primary);">')
+                .replace(/<em>/g, '<em style="color: var(--text-secondary);">');
+        }
+        
+        function closeModal(e) {
+            if (!e || e.target.id === 'analysis-modal') {
+                document.getElementById('analysis-modal').classList.remove('active');
+            }
+        }
+        
+        // ==================== OTHER TABS ====================
+        
+        async function loadEarnings() {
+            try {
+                const response = await fetch('/api/earnings-research');
+                const data = await response.json();
+                document.getElementById('earnings-content').innerHTML = 
+                    data.length > 0 
+                        ? `<div class="analysis-grid">${data.map(e => `
+                            <div class="analysis-card">
+                                <div class="analysis-card-header">
+                                    <div class="analysis-card-ticker">${e.ticker}</div>
+                                    <div class="analysis-card-grade">${e.grade || 'B+'}</div>
+                                </div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">
+                                    ${e.date || ''} | Expected Move: ${e.expected_move || 'N/A'}
+                                </div>
+                                <div class="analysis-card-summary">
+                                    <strong>Action:</strong> ${e.action || 'Monitor'}<br>
+                                    <strong>IV Rank:</strong> ${e.iv_rank || 'N/A'}
+                                </div>
+                            </div>
+                        `).join('')}</div>`
+                        : '<div class="card">No earnings research available</div>';
+            } catch (error) {
+                document.getElementById('earnings-content').innerHTML = 
+                    '<div class="card">Error loading earnings data</div>';
+            }
+        }
+        
+        // ==================== IDEAS KANBAN ====================
+        
+        let ideasData = [];
+        let currentEditingIdea = null;
+        
+        const KANBAN_COLUMNS = [
+            { id: 'backlog', label: 'Backlog' },
+            { id: 'discussing', label: 'Discussing' },
+            { id: 'approved', label: 'Approved' },
+            { id: 'in_progress', label: 'In Progress' },
+            { id: 'done', label: 'Done' }
+        ];
+        
+        const CATEGORY_CONFIG = {
+            'Trading': { label: '💼 Trading', class: 'category-trading' },
+            'Automation': { label: '⚙️ Automation', class: 'category-automation' },
+            'Tech': { label: '🔧 Tech', class: 'category-tech' },
+            'Personal': { label: '🏠 Personal', class: 'category-personal' }
+        };
+
+        const EFFORT_CONFIG = {
+            'Quick': '⏱️ Quick',
+            'Medium': '⏱️⏱️ Medium',
+            'Big': '⏱️⏱️⏱️ Big'
+        };
+
+        const SOURCE_CONFIG = {
+            'conversation': '🗣️',
+            'AI-suggested': '🤖',
+            'user-added': '👤'
+        };
+        
+        const PRIORITY_CONFIG = {
+            'high': 'priority-high',
+            'normal': 'priority-medium',
+            'low': 'priority-low'
+        };
+        
+        async function loadIdeas() {
+            try {
+                const response = await fetch('/api/ideas');
+                const data = await response.json();
+                ideasData = data.ideas || data || [];
+                renderKanbanBoard();
+            } catch (error) {
+                // Demo mode - show sample data when API is unavailable
+                const response = await fetch('/api/ideas?t=' + Date.now());
+                const data = await response.json();
+                ideasData = data.ideas || [];
+                renderKanbanBoard();
+            }
+        }
+        
+        function getSampleIdeas() {
+            return [
+                { id: '1', title: 'Research AAPL earnings play', category: 'trading', effort: 'quick', priority: 'high', status: 'backlog', source: 'conversation', created_at: '2026-02-15' },
+                { id: '2', title: 'Build options scanner dashboard', category: 'tech', effort: 'big', priority: 'medium', status: 'in_progress', source: 'ai', created_at: '2026-02-10', analysis: 'This would significantly improve trading efficiency by automating IV rank monitoring.' },
+                { id: '3', title: 'Set up automated alerts', category: 'tech', effort: 'medium', priority: 'high', status: 'approved', source: 'user', created_at: '2026-02-14' },
+                { id: '4', title: 'Review portfolio allocation', category: 'trading', effort: 'medium', priority: 'medium', status: 'discussing', source: 'ai', created_at: '2026-02-13', analysis: 'Consider reducing tech exposure given recent volatility.' },
+                { id: '5', title: 'Organize home office', category: 'personal', effort: 'quick', priority: 'low', status: 'done', source: 'user', created_at: '2026-02-01' },
+                { id: '6', title: 'Research TSLA straddle opportunity', category: 'trading', effort: 'medium', priority: 'high', status: 'backlog', source: 'conversation', created_at: '2026-02-16' },
+                { id: '7', title: 'Migrate to new broker API', category: 'tech', effort: 'big', priority: 'low', status: 'discussing', source: 'ai', created_at: '2026-02-12' }
+            ];
+        }
+        
+        function renderKanbanBoard() {
+            const kanbanContainer = document.getElementById('ideas-kanban');
+            
+            kanbanContainer.innerHTML = KANBAN_COLUMNS.map(col => {
+                const columnIdeas = ideasData
+                    .filter(idea => (idea.status || 'backlog') === col.id)
+                    .sort((a, b) => {
+                        // Sort by priority (high -> medium -> low) then by date
+                        const priorityOrder = { high: 0, medium: 1, low: 2 };
+                        const priorityDiff = (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2);
+                        if (priorityDiff !== 0) return priorityDiff;
+                        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+                    });
+                
+                const isBacklog = col.id === 'backlog';
+                
+                return `
+                    <div class="kanban-column">
+                        <div class="kanban-column-header">
+                            <span class="kanban-column-title">${col.label}</span>
+                            <span class="kanban-column-count">${columnIdeas.length}</span>
+                        </div>
+                        <div class="kanban-column-content">
+                            ${columnIdeas.map(idea => renderIdeaCard(idea)).join('')}
+                            ${isBacklog ? `
+                                <button class="kanban-add-btn" onclick="openNewIdeaModal()">
+                                    <span>+</span> Add Idea
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderIdeaCard(idea) {
+            const category = CATEGORY_CONFIG[idea.category] || { label: idea.category || '💼 Other', class: 'category-trading' };
+            const effort = EFFORT_CONFIG[idea.effort] || '⏱️ Quick';
+            const source = SOURCE_CONFIG[idea.source] || '👤';
+            const priorityClass = PRIORITY_CONFIG[idea.priority] || 'priority-low';
+            const createdDate = idea.created_date ? new Date(idea.created_date).toLocaleDateString() : '';
+            
+            return `
+                <div class="kanban-card ${priorityClass}" onclick="openIdeaModal('${idea.id}')">
+                    <div class="kanban-card-title">${escapeHtml(idea.title || 'Untitled Idea')}</div>
+                    <div class="kanban-card-meta">
+                        <span class="category-badge ${category.class}">${category.label}</span>
+                        <span class="effort-indicator" title="Effort">${effort}</span>
+                        <span class="source-indicator" title="Source: ${idea.source || 'user'}">${source}</span>
+                    </div>
+                    ${createdDate ? `<div class="date-display">${createdDate}</div>` : ''}
+                </div>
+            `;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function openNewIdeaModal() {
+            currentEditingIdea = null;
+            document.getElementById('idea-id').value = '';
+            document.getElementById('idea-title').value = '';
+            document.getElementById('idea-category').value = 'Trading';
+            document.getElementById('idea-effort').value = 'Quick';
+            document.getElementById('idea-priority').value = 'normal';
+            document.getElementById('idea-status').value = 'backlog';
+            document.getElementById('idea-notes').value = '';
+            document.getElementById('idea-analysis').innerHTML = '<em>No analysis available for this idea.</em>';
+            document.getElementById('idea-delete-btn').style.display = 'none';
+            document.getElementById('idea-modal-title').textContent = 'New Idea';
+            document.getElementById('idea-modal').classList.add('active');
+        }
+        
+        function openIdeaModal(ideaId) {
+            const idea = ideasData.find(i => i.id === ideaId);
+            if (!idea) return;
+            
+            currentEditingIdea = idea;
+            document.getElementById('idea-id').value = idea.id;
+            document.getElementById('idea-title').value = idea.title || '';
+            document.getElementById('idea-category').value = idea.category || 'Trading';
+            document.getElementById('idea-effort').value = idea.effort || 'Quick';
+            document.getElementById('idea-priority').value = idea.priority || 'normal';
+            document.getElementById('idea-status').value = idea.status || 'backlog';
+            document.getElementById('idea-notes').value = idea.your_notes || '';
+            document.getElementById('idea-analysis').innerHTML = idea.my_analysis 
+                ? escapeHtml(idea.my_analysis).replace(/\n/g, '<br>')
+                : '<em>No analysis available for this idea.</em>';
+            document.getElementById('idea-delete-btn').style.display = 'inline-block';
+            
+            // Show "Start Work" button if idea is approved or in approved+ status
+            const canStartWork = ['approved', 'in_progress'].includes(idea.status);
+            document.getElementById('start-work-section').style.display = canStartWork ? 'block' : 'none';
+            
+            document.getElementById('idea-modal-title').textContent = 'Edit Idea';
+            document.getElementById('idea-modal').classList.add('active');
+        }
+        
+        function closeIdeaModal(e) {
+            if (!e || e.target.id === 'idea-modal') {
+                document.getElementById('idea-modal').classList.remove('active');
+            }
+        }
+        
+        async function queueForExecution() {
+            if (!currentEditingIdea) return;
+            
+            const ideaId = currentEditingIdea.id;
+            const ideaTitle = currentEditingIdea.title;
+            
+            try {
+                const response = await fetch('/api/queue-idea', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        idea_id: ideaId,
+                        idea_title: ideaTitle 
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('✅ Idea queued! Check Telegram for next steps.');
+                    closeIdeaModal();
+                } else {
+                    alert('❌ Failed to queue idea. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error queueing idea:', error);
+                alert('❌ Error queueing idea. Please try again.');
+            }
+        }
+        
+        async function saveIdea(e) {
+            e.preventDefault();
+            
+            const ideaData = {
+                id: document.getElementById('idea-id').value || 'idea_' + Date.now(),
+                title: document.getElementById('idea-title').value,
+                category: document.getElementById('idea-category').value,
+                effort: document.getElementById('idea-effort').value,
+                priority: document.getElementById('idea-priority').value,
+                status: document.getElementById('idea-status').value,
+                your_notes: document.getElementById('idea-notes').value,
+                source: currentEditingIdea?.source || 'user-added',
+                created_date: currentEditingIdea?.created_date || new Date().toISOString()
+            };
+            
+            try {
+                // Update local data
+                if (currentEditingIdea) {
+                    const index = ideasData.findIndex(i => i.id === ideaData.id);
+                    if (index !== -1) {
+                        ideasData[index] = { ...ideasData[index], ...ideaData };
+                    }
+                } else {
+                    ideasData.push(ideaData);
+                }
+                
+                // Send to API
+                await fetch('/api/ideas', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ideas: ideasData })
+                });
+                
+                renderKanbanBoard();
+                closeIdeaModal();
+            } catch (error) {
+                alert('Error saving idea');
+            }
+        }
+        
+        async function deleteIdea() {
+            if (!currentEditingIdea) return;
+            
+            if (!confirm('Are you sure you want to delete this idea?')) return;
+            
+            try {
+                ideasData = ideasData.filter(i => i.id !== currentEditingIdea.id);
+                
+                await fetch('/api/ideas', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ideas: ideasData })
+                });
+                
+                renderKanbanBoard();
+                closeIdeaModal();
+            } catch (error) {
+                alert('Error deleting idea');
+            }
+        }
+        
+        // Attach form submit handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('idea-form');
+            if (form) {
+                form.addEventListener('submit', saveIdea);
+            }
+        });
+        
+        async function loadSchedule() {
+            try {
+                const response = await fetch('/api/schedule');
+                const data = await response.json();
+                const events = data.events || data || [];
+                document.getElementById('schedule-content').innerHTML = 
+                    events.length > 0
+                        ? `<div class="card"><table class="portfolio-table"><thead><tr><th>Date</th><th>Time</th><th>Event</th><th>Location</th></tr></thead><tbody>${events.map(e => `
+                            <tr style="${e.is_today ? 'background: rgba(59, 130, 246, 0.1);' : ''}">
+                                <td><strong>${e.date}</strong> ${e.is_today ? '<span style="color: var(--accent);">(Today)</span>' : ''}</td>
+                                <td>${e.time || '-'}</td>
+                                <td>${e.event}</td>
+                                <td>${e.location || '-'}</td>
+                            </tr>
+                        `).join('')}</tbody></table></div>`
+                        : '<div class="card">No upcoming events</div>';
+            } catch (error) {
+                document.getElementById('schedule-content').innerHTML = 
+                    '<div class="card">Error loading schedule</div>';
+            }
+        }
+        
+        async function loadCorporate() {
+            try {
+                const response = await fetch('/api/corporate?t=' + Date.now());
+                const data = await response.json();
+                if (!data.team?.length) { document.getElementById('corporate-content').innerHTML = '<div class="card">No data</div>'; return; }
+                
+                const colors = {};
+                data.departments?.forEach(d => colors[d.id] = d.hex);
+                
+                const byLevel = {};
+                data.team.forEach(m => { const lvl = m.level || 3; byLevel[lvl] = byLevel[lvl] || []; byLevel[lvl].push(m); });
+                
+                let html = '<div class="org-tree">';
+                [1, 2, 3].forEach(lvl => {
+                    if (byLevel[lvl]) {
+                        if (lvl > 1) html += '<div class="org-connector"></div>';
+                        html += '<div class="org-level">';
+                        byLevel[lvl].forEach(m => html += renderCard(m, colors));
+                        html += '</div>';
+                    }
+                });
+                html += '</div>';
+                html += '<div class="org-legend">' + (data.departments || []).map(d => `<div style="display:flex;align-items:center;gap:0.5rem"><div style="width:12px;height:12px;border-radius:50%;background:${d.hex}"></div><span style="color:var(--text-secondary)">${d.name}</span></div>`).join('') + '</div>';
+                document.getElementById('corporate-content').innerHTML = html;
+            } catch (e) { document.getElementById('corporate-content').innerHTML = '<div class="card">Error loading data</div>'; }
+        }
+        
+        function renderCard(m, colors) {
+            const color = colors[m.department] || '#3b82f6';
+            return `<div class="org-card" style="--dept-color:${color}"><div class="org-card-header"><div class="org-card-avatar">${m.emoji || '👤'}</div><div><h3>${m.name}</h3><div class="org-card-role">${m.role}</div></div></div><div class="org-card-body">${m.description || ''}</div></div>`;
+        }
+        
+        async function loadUsage() {
+            try {
+                const response = await fetch('/api/usage');
+                const data = await response.json();
+                const apis = Object.values(data.apis || {});
+                const totalCost = data.total_cost || 0;
+                
+                document.getElementById('usage-content').innerHTML = 
+                    apis.length > 0
+                        ? `<div class="card" style="margin-bottom: 1.5rem;">
+                            <div class="card-header">
+                                <div class="card-title">Total Estimated Cost This Month</div>
+                                <div class="card-value">\$${totalCost.toFixed(2)}</div>
+                            </div>
+                           </div>
+                           <div class="card">
+                               <table class="portfolio-table">
+                                   <thead>
+                                       <tr>
+                                           <th>API</th>
+                                           <th>Purpose</th>
+                                           <th>Tier</th>
+                                           <th>Status</th>
+                                           <th>Limit</th>
+                                           <th>Calls</th>
+                                           <th>Cost</th>
+                                           <th>Dashboard</th>
+                                       </tr>
+                                   </thead>
+                                   <tbody>
+                                       ${apis.map(api => `
+                                           <tr>
+                                               <td><strong>${api.name}</strong></td>
+                                               <td>${api.purpose}</td>
+                                               <td>${api.tier}</td>
+                                               <td style="color: ${api.status === 'Active' ? 'var(--positive)' : 'var(--negative)'}">${api.status}</td>
+                                               <td>${api.limit}</td>
+                                               <td>${api.calls_this_month}</td>
+                                               <td>\$${api.cost.toFixed(2)}</td>
+                                               <td>${api.dashboard_url ? `<a href="${api.dashboard_url}" target="_blank" style="color: var(--accent)">View →</a>` : '-'}</td>
+                                           </tr>
+                                       `).join('')}
+                                   </tbody>
+                               </table>
+                           </div>`
+                        : '<div class="card">No API usage data available</div>';
+            } catch (error) {
+                console.error('Error loading API usage:', error);
+                document.getElementById('usage-content').innerHTML = 
+                    '<div class="card">Error loading API usage: ' + error.message + '</div>';
+            }
+        }
+        
+        // Load initial data
+        loadHoldings();
+    </script>
+</body>
+</html>

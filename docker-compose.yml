@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  mission-control:
+    build: .
+    container_name: mission-control
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    restart: always
+    environment:
+      - FLASK_ENV=production
+      - PORT=8080
